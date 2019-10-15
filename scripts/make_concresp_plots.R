@@ -7,17 +7,17 @@ library(kableExtra)
 extrafont::loadfonts()
 
 currents <-
-    read_csv("/home/sam/previous_analysis/2019_manuscript/data/electrophys_data.csv") %>%
+    read_csv("data/electrophys_data.csv") %>%
     select(unique_experiment_id, method, measure, construct, nucleotide, concentration, response)
 
 fluorescence <-
-    read_csv("/home/sam/previous_analysis/2019_manuscript/data/unroofed_concresp_data.csv") %>%
+    read_csv("data/unroofed_concresp_data.csv") %>%
     filter(dye < 480) %>%
     select(unique_experiment_id, method, measure, construct, concentration, response) %>%
     mutate(nucleotide = "TNP-ATP")
 
 pcf_data <-
-    read_csv("/home/sam/previous_analysis/2019_manuscript/data/pcf_data.csv") %>%
+    read_csv("data/pcf_data.csv") %>%
     filter(measure == "fluorescence", dye < 480) %>%
     select(unique_experiment_id, method, measure, construct, concentration, response) %>%
     mutate(nucleotide = "TNP-ATP")
@@ -149,8 +149,6 @@ plots <-
         rel_heights = c(2, 2.5, 3)
     )
 
-ggsave("mike_update/concresp.pdf", plots, width = 200, height = 290, units = "mm")
-
 free_floor_tidy %>%
 select(-statistic, -p.value) %>%
 rename(Method = method, Measure = measure, Nucleotide = nucleotide, Construct = construct, Term = term, Estimate = estimate, `Standard Error` = std.error) %>%
@@ -164,8 +162,6 @@ kable_styling(latex_options = "striped", font_size = 12) %>%
 collapse_rows(1:4, row_group_label_position = "stack") %>%
 footnote(general = "EC50 values are expressed in log10 values.") %>%
 landscape() -> concresp_table
-
-save_kable(concresp_table, "mike_update/concresp_table.pdf", latex_header_includes = "\\setmainfont[UprightFont = *-Light]{IBM Plex Serif}")
 
 ggplot() +
 geom_quasirandom(data = concresp %>% filter(measure == "current", construct %in% c("W311*-GFP+SUR", "WT-GFP+SUR")), aes(x = concentration, y = response, fill = nucleotide), shape = 21, alpha = 0.5, size = 1.5, width = 0.2) +

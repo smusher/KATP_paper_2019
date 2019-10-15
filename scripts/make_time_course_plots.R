@@ -14,7 +14,7 @@ population_washout_fits <- readRDS("data/population_washout_fits.rds") %>%
 population_taus_fits <- readRDS("data/population_taus_fits.rds")
 
 time_course <-
-    read_csv("/home/sam/previous_analysis/2019_manuscript/data/unroofed_timecourse_data.csv") %>%
+    read_csv("data/unroofed_timecourse_data.csv") %>%
     filter(dye < 480) %>%
     group_by(unique_experiment_id, construct, repetition) %>%
     mutate(time = time - min(time)) %>%

@@ -92,7 +92,7 @@ theme_cowplot(font_family = "IBM Plex Sans Condensed Light", font_size = 9) +
 theme(strip.background  = element_rect(fill = "white"), legend.position = "top") -> dens_3
 
 pcf_data <-
-    read_csv("/home/sam/previous_analysis/2019_manuscript/data/pcf_data.csv") %>%
+    read_csv("data/pcf_data.csv") %>%
     filter(dye < 480 | is.na(dye), concentration > 0) %>%
     select(unique_experiment_id, construct, measure, method, concentration, response)
 
@@ -167,8 +167,6 @@ dens_3 <- dens_3 + theme(legend.position = "none")
 top_row <- plot_grid(legend, dens_1, dens_2, dens_3, nrow = 4, align = "v", axis = "l", rel_heights = c(0.5, 1, 1, 1))
 plots <- plot_grid(top_row, fit_plot, ncol = 1, align = "hv", axis = "lb")
 
-ggsave("mike_update/population_bayes.pdf", plots, width = 200, height = 290, units = "mm")
-
 toplot <-
     gather_draws %>%
     filter(probability == "posterior", hierarchy == "individual", parameter != "L", parameter != "Ka", parameter != "Po")
@@ -221,8 +219,6 @@ dens_3 <- dens_3 + theme(legend.position = "none")
 top_row <- plot_grid(legend, dens_1, dens_2, dens_3, nrow = 4, align = "v", axis = "l", rel_heights = c(0.5, 1, 1, 1))
 plots <- plot_grid(top_row, fit_plot, ncol = 1, align = "hv", axis = "lb")
 
-ggsave("mike_update/individual_bayes.pdf", plots, width = 200, height = 290, units = "mm")
-
 gather_draws %>%
 group_by(construct, model, hierarchy, parameter) %>%
 point_interval(estimate, .point = median, .interval = qi) %>%
@@ -232,10 +228,3 @@ kable("latex", booktabs = T, digits = 2) %>%
 landscape() %>%
 kable_styling(latex_options = "striped", font_size = 12) %>%
 add_header_above(c(" " = 4, "median estimates" = 3)) -> fit_table
-
-save_kable(fit_table, "mike_update/bayes_table.pdf", latex_header_includes = "\\setmainfont[UprightFont = *-Light]{IBM Plex Serif}")
-
- wt <-
-    model_fits %>%
-    filter(construct == "W311*-GFP+SUR", hierarchy != "individual") %>%
-    mutate(loo_score = fit %>% map(loo, reloo = TRUE))

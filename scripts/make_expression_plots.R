@@ -96,85 +96,83 @@ labs(y = "Current fraction remaining with 100 uM Tolbutamide") +
 theme_cowplot(font_family = "IBM Plex Sans Condensed Light", font_size = 9) +
 theme(axis.title.y = element_blank(), legend.position = "none", strip.background  = element_rect(fill = "white")) -> tolbutamide_plot
 
-spectral_decomposition <-
-    read_csv("data/gfp_ofp_fret_spectra.csv")
+# spectral_decomposition <-
+#     read_csv("data/gfp_ofp_fret_spectra.csv")
 
-spectral_decomposition_long <-
-    spectral_decomposition %>%
-    select(-gfp_intensity_max) %>%
-    gather(excitation_wavelength, intensity, -n, -construct, -wavelength, -method)
+# spectral_decomposition_long <-
+#     spectral_decomposition %>%
+#     select(-gfp_intensity_max) %>%
+#     gather(excitation_wavelength, intensity, -n, -construct, -wavelength, -method)
 
-spectral_subtraction <-
-    spectral_decomposition_long %>%
-    filter(excitation_wavelength %in% c("490", "490_subtracted", "565")) %>%
-    mutate(
-        excitation_wavelength = case_when(
-            excitation_wavelength == "490_subtracted" ~ "490 (GFP subtracted)",
-            TRUE ~ excitation_wavelength
-            )
-        )
+# spectral_subtraction <-
+#     spectral_decomposition_long %>%
+#     filter(excitation_wavelength %in% c("490", "490_subtracted", "565")) %>%
+#     mutate(
+#         excitation_wavelength = case_when(
+#             excitation_wavelength == "490_subtracted" ~ "490 (GFP subtracted)",
+#             TRUE ~ excitation_wavelength
+#             )
+#         )
 
-spectral_subtraction_summary <-
-    spectral_subtraction %>%
-    group_by(n, construct, method, excitation_wavelength) %>%
-    mutate(norm_intensity = intensity / max(intensity)) %>%
-    group_by(construct, method, wavelength, excitation_wavelength) %>%
-    summarise(se = sd(norm_intensity)/sqrt(length(norm_intensity)), intensity = mean(norm_intensity)) %>%
-    filter(wavelength > 500)
+# spectral_subtraction_summary <-
+#     spectral_subtraction %>%
+#     group_by(n, construct, method, excitation_wavelength) %>%
+#     mutate(norm_intensity = intensity / max(intensity)) %>%
+#     group_by(construct, method, wavelength, excitation_wavelength) %>%
+#     summarise(se = sd(norm_intensity)/sqrt(length(norm_intensity)), intensity = mean(norm_intensity)) %>%
+#     filter(wavelength > 500)
 
-ratio <-
-    spectral_decomposition %>%
-    filter(wavelength > 575, wavelength < 615) %>%
-    group_by(n, construct, method) %>%
-    summarise(ratio = mean(ratio_490_565))
+# ratio <-
+#     spectral_decomposition %>%
+#     filter(wavelength > 575, wavelength < 615) %>%
+#     group_by(n, construct, method) %>%
+#     summarise(ratio = mean(ratio_490_565))
 
-ratio_summary <-
-    ratio %>%
-    group_by(construct, method) %>%
-    summarise(
-        se = sd(ratio) / sqrt(length(ratio)),
-        ratio = mean(ratio)
-        )
+# ratio_summary <-
+#     ratio %>%
+#     group_by(construct, method) %>%
+#     summarise(
+#         se = sd(ratio) / sqrt(length(ratio)),
+#         ratio = mean(ratio)
+#         )
 
-ggplot() +
-geom_line(
-    data = spectral_subtraction_summary,
-    aes(x = wavelength, y = intensity, colour = excitation_wavelength)
-    ) +
-scale_colour_brewer(palette = "Set2",guide = guide_legend(title = "Excitation Wavelength (nm)", title.position = "top")) +
-facet_grid(cols = vars(method), rows = vars(construct), labeller = labeller(construct = split_construct)) +
-coord_cartesian(ylim = c(0, 1)) +
-labs(y = "Normalised Intensity", x = "Wavelength (nm)") +
-theme_cowplot(font_family = "IBM Plex Sans Condensed Light", font_size = 9) +
-theme(legend.position = "right", strip.text.y = element_text(size = 6), strip.background  = element_rect(fill = "white")) +
-scale_y_continuous(breaks = c(0, 0.5, 1)) -> spectral_subtraction_plot
+# ggplot() +
+# geom_line(
+#     data = spectral_subtraction_summary,
+#     aes(x = wavelength, y = intensity, colour = excitation_wavelength)
+#     ) +
+# scale_colour_brewer(palette = "Set2",guide = guide_legend(title = "Excitation Wavelength (nm)", title.position = "top")) +
+# facet_grid(cols = vars(method), rows = vars(construct), labeller = labeller(construct = split_construct)) +
+# coord_cartesian(ylim = c(0, 1)) +
+# labs(y = "Normalised Intensity", x = "Wavelength (nm)") +
+# theme_cowplot(font_family = "IBM Plex Sans Condensed Light", font_size = 9) +
+# theme(legend.position = "right", strip.text.y = element_text(size = 6), strip.background  = element_rect(fill = "white")) +
+# scale_y_continuous(breaks = c(0, 0.5, 1)) -> spectral_subtraction_plot
 
-ggplot() +
-geom_quasirandom(
-    data = ratio %>% filter(construct != "WT-GFP+SUR"),
-    shape = 21,
-    stroke = 0.5,
-    size = 2,
-    colour = "black",
-    aes(x = construct, y = ratio, fill = method)
-) +
-coord_flip() +
-scale_fill_brewer(palette = "Set2", guide = guide_legend(title = "Method", title.position = "top")) +
-labs(y = "Average Ratio 565:490 Excitation") +
-scale_x_discrete(labels = split_construct) +
-theme_cowplot(font_family = "IBM Plex Sans Condensed Light", font_size = 9) +
-theme(axis.title.y = element_blank(), legend.position = "right", strip.background  = element_rect(fill = "white")) -> ratio_plot
+# ggplot() +
+# geom_quasirandom(
+#     data = ratio %>% filter(construct != "WT-GFP+SUR"),
+#     shape = 21,
+#     stroke = 0.5,
+#     size = 2,
+#     colour = "black",
+#     aes(x = construct, y = ratio, fill = method)
+# ) +
+# coord_flip() +
+# scale_fill_brewer(palette = "Set2", guide = guide_legend(title = "Method", title.position = "top")) +
+# labs(y = "Average Ratio 565:490 Excitation") +
+# scale_x_discrete(labels = split_construct) +
+# theme_cowplot(font_family = "IBM Plex Sans Condensed Light", font_size = 9) +
+# theme(axis.title.y = element_blank(), legend.position = "right", strip.background  = element_rect(fill = "white")) -> ratio_plot
 
-plot_grid(
-    kir_comparison_plot, tolbutamide_plot,
-    sur_comparison_plot, ratio_plot,
-    ncol = 2, align = "hv", axis = "lb", rel_heights = c(1, 1)
-) -> expression_plots
+# plot_grid(
+#     kir_comparison_plot, tolbutamide_plot,
+#     sur_comparison_plot, ratio_plot,
+#     ncol = 2, align = "hv", axis = "lb", rel_heights = c(1, 1)
+# ) -> expression_plots
 
-plot_grid(
-    expression_plots,
-    spectral_subtraction_plot,
-    ncol = 1, rel_heights = c(1.2, 1)
-) -> all_plots
-
-ggsave("mike_update/expression.pdf", all_plots, width = 200, height = 290, units = "mm")
+# plot_grid(
+#     expression_plots,
+#     spectral_subtraction_plot,
+#     ncol = 1, rel_heights = c(1.2, 1)
+# ) -> all_plots

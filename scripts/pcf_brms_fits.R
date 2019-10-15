@@ -72,17 +72,17 @@ coop_formula_fixed <-
 mwc_formula_fixed_cs <-
     mwc_formula %>%
     str_replace_all("Ka", "(10^logKa)") %>%
-    str_replace_all("L", "6.0")
+    str_replace_all("L", "6.01")
 
 single_formula_fixed_cs <-
     single_formula %>%
     str_replace_all("Ka", "(10^logKa)") %>%
-    str_replace_all("L", "6.0")
+    str_replace_all("L", "6.01")
 
 coop_formula_fixed_cs <-
     mwc_formula_with_cooperativity %>%
     str_replace_all("Ka", "(10^logKa)") %>%
-    str_replace_all("L", "6.0")
+    str_replace_all("L", "6.01")
 
 mwc_priors <-
     c(
